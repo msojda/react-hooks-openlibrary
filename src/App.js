@@ -1,46 +1,46 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import * as client from './OpenLibraryClient';
 import BooksList from './BooksList';
 import SearchForm from './SearchForm';
 
-class App extends Component {
-  state = { books: [], isFetching: false, query: '', numFound: 0 };
+const App = () => {
+  const [isFetching, setIsFetching] = useState(false);
+  const [books, setBooks] = useState([]);
+  const [numFound, setNumFound] = useState(0);
+  const [query, setQuery] = useState('');
 
-  onSearch = async e => {
+  const onSearch = async e => {
     e.preventDefault();
-    this.setState({ isFetching: true, books: [] });
-    const result = await client.findBooks(this.state.query);
+
+    setIsFetching(true);
+
+    const result = await client.findBooks(query);
     const { docs = [], numFound = 0 } = result;
-    this.setState({ books: docs, isFetching: false, numFound });
+
+    setIsFetching(false);
+    setBooks(docs);
+    setNumFound(numFound);
   };
 
-  onQueryChange = ({ target: { value } }) => {
-    this.setState({ query: value });
+  const onQueryChange = ({ target: { value } }) => {
+    setQuery(value);
   };
 
-  render() {
-    return (
-      <Fragment>
-        <section className="section">
-          <div className="container">
-            <h1 className="title has-text-centered">
-              Open Library books search
-            </h1>
-          </div>
-        </section>
-        <SearchForm
-          onQueryChange={this.onQueryChange}
-          onSearch={this.onSearch}
-          query={this.state.query}
-        />
-        <BooksList
-          loading={this.state.isFetching}
-          books={this.state.books}
-          count={this.state.numFound}
-        />
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      <section className="section">
+        <div className="container">
+          <h1 className="title has-text-centered">Open Library books search</h1>
+        </div>
+      </section>
+      <SearchForm
+        onQueryChange={onQueryChange}
+        onSearch={onSearch}
+        query={query}
+      />
+      <BooksList loading={isFetching} books={books} count={numFound} />
+    </Fragment>
+  );
+};
 
 export default App;
