@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import Spinner from './Spinner';
-import Book from './Book';
 import * as client from './OpenLibraryClient';
+import BooksList from './BooksList';
+import SearchForm from './SearchForm';
 
 class App extends Component {
   state = { books: [], isFetching: false, query: '', numFound: 0 };
@@ -28,42 +28,16 @@ class App extends Component {
             </h1>
           </div>
         </section>
-        <section className="section">
-          <div className="container">
-            <form onSubmit={this.onSearch}>
-              <div className="field has-addons">
-                <div className="control is-expanded">
-                  <input
-                    className="input is-large"
-                    type="text"
-                    placeholder="Title"
-                    defaultValue={this.state.query}
-                    onChange={this.onQueryChange}
-                  />
-                </div>
-                <div className="control">
-                  <button type="submit" className="button is-info is-large">
-                    Search
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </section>
-        <section className="section">
-          <div className="container">
-            {this.state.isFetching && <Spinner />}
-            {this.state.books.length > 0 && (
-              <p className="subtitle">
-                Showing <strong>{this.state.books.length}</strong> of{' '}
-                <strong>{this.state.numFound}</strong> results.
-              </p>
-            )}
-            {this.state.books.map(book => (
-              <Book book={book} key={book.key} />
-            ))}
-          </div>
-        </section>
+        <SearchForm
+          onQueryChange={this.onQueryChange}
+          onSearch={this.onSearch}
+          query={this.state.query}
+        />
+        <BooksList
+          loading={this.state.isFetching}
+          books={this.state.books}
+          count={this.state.numFound}
+        />
       </Fragment>
     );
   }
